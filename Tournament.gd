@@ -10,11 +10,18 @@ signal error
 
 onready var http = get_node("ParticipantsHTTPRequest")
 
+var env = {}
 var api_key = "" setget set_api_key, get_api_key
 var participants = [] setget set_participants,get_participants
 var tournament_name = "newfoepm" setget set_tournament_name, get_tournament_name
 
 func _ready():
+	var file = File.new()
+	file.open("res://env.json", File.READ)
+	env = JSON.parse(file.get_as_text()).result
+	
+	api_key = env["api_key"]
+	file.close()
 	pass
 
 func set_api_key(new_key):
