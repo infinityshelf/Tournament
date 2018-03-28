@@ -13,7 +13,7 @@ onready var http = get_node("ParticipantsHTTPRequest")
 var env = {}
 var api_key = "" setget set_api_key, get_api_key
 var participants = [] setget set_participants,get_participants
-var tournament_name = "newfoepm" setget set_tournament_name, get_tournament_name
+var tournament_name = "godot" setget set_tournament_name, get_tournament_name
 
 func _ready():
 	var file = File.new()
@@ -22,6 +22,8 @@ func _ready():
 	
 	api_key = env["api_key"]
 	file.close()
+	
+	#HTTPClient.new().connect_to_host("https://api.challonge.com/v1/", 80, false, true)
 	pass
 
 func set_api_key(new_key):
@@ -48,9 +50,10 @@ func get_participant(id):
 			return p
 	return null
 
-func http_request(sender, path, method):
-	var request_url = "https://api.challonge.com/v1/tournaments/" + Tournament.get_tournament_name() + path + "?api_key=" + Tournament.get_api_key()
-	http.request(request_url, [], false, HTTPClient.METHOD_GET)
+func http_request(sender, http_method, headers ,path, method, body=""):
+	var request_url = "http://api.challonge.com/v1/tournaments/" + Tournament.get_tournament_name() + path + "?api_key=" + Tournament.get_api_key()
+	http.request(request_url, PoolStringArray(headers), false, http_method, body)
+	#http.request(http_method, request_url, headers, body)
 	http.connect("request_completed", self, "_on_HTTPRequest_request_completed", [method], CONNECT_ONESHOT)
 	pass
 	
@@ -61,3 +64,6 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body, cal
 			callback.call_func(json_response)
 		_:
 			emit_signal("error", json_response)
+			for string in headers:
+				print(string)
+			print("********\n" + str(JSON.parse(body.get_string_from_ascii()).get_result()))

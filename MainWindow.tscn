@@ -1,12 +1,25 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=12 format=2]
 
-[ext_resource path="res://ItemList.gd" type="Script" id=1]
-[ext_resource path="res://ButtonUpdate.gd" type="Script" id=2]
-[ext_resource path="res://HBoxContainerPlayers.gd" type="Script" id=3]
-[ext_resource path="res://LineEditTournamentName.gd" type="Script" id=4]
-[ext_resource path="res://LineEditApiKey.gd" type="Script" id=5]
+[ext_resource path="res://MainWindow.gd" type="Script" id=1]
+[ext_resource path="res://Participants.gd" type="Script" id=2]
+[ext_resource path="res://ItemList.gd" type="Script" id=3]
+[ext_resource path="res://ButtonUpdate.gd" type="Script" id=4]
+[ext_resource path="res://Match.gd" type="Script" id=5]
+[ext_resource path="res://DroidSansMono.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://Settings.gd" type="Script" id=7]
+[ext_resource path="res://LineEditTournamentName.gd" type="Script" id=8]
+[ext_resource path="res://LineEditApiKey.gd" type="Script" id=9]
+[ext_resource path="res://RichTextLabel.gd" type="Script" id=10]
 
-[node name="Container" type="Container" index="0"]
+[sub_resource type="DynamicFont" id=1]
+
+size = 72
+use_mipmaps = false
+use_filter = true
+font_data = ExtResource( 6 )
+_sections_unfolded = [ "Extra Spacing", "Font", "Settings" ]
+
+[node name="ContainerMain" type="Container" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -18,6 +31,7 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
+script = ExtResource( 1 )
 _sections_unfolded = [ "Anchor", "Margin" ]
 
 [node name="ColorRect" type="ColorRect" parent="." index="0"]
@@ -32,7 +46,7 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-color = Color( 0.195313, 0.00686646, 0.00686646, 1 )
+color = Color( 0.2, 0, 0, 1 )
 _sections_unfolded = [ "Anchor", "Margin" ]
 
 [node name="Container" type="Container" parent="." index="1"]
@@ -71,6 +85,7 @@ _sections_unfolded = [ "Anchor", "Margin" ]
 
 [node name="Participants" type="Container" parent="Container/TabContainer" index="0"]
 
+visible = false
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -85,7 +100,9 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
+script = ExtResource( 2 )
 _sections_unfolded = [ "Anchor", "Margin" ]
+match_container_path = NodePath("../Match")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Container/TabContainer/Participants" index="0"]
 
@@ -118,12 +135,12 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-items = [ "Foo", null, false, "Bar", null, false ]
+items = [  ]
 select_mode = 0
 allow_reselect = false
 icon_mode = 1
 fixed_icon_size = Vector2( 0, 0 )
-script = ExtResource( 1 )
+script = ExtResource( 3 )
 _sections_unfolded = [ "Anchor", "Columns", "Icon", "Margin", "Rect" ]
 get_participants_on_load = null
 
@@ -198,11 +215,10 @@ group = null
 text = "Update"
 flat = false
 align = 1
-script = ExtResource( 2 )
+script = ExtResource( 4 )
 
 [node name="Match" type="Container" parent="Container/TabContainer" index="1"]
 
-visible = false
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -217,7 +233,11 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
+script = ExtResource( 5 )
 _sections_unfolded = [ "Anchor", "Margin" ]
+player_1_tag_path = NodePath("VBoxContainer/Container/VBoxContainer/HBoxContainer/LabelPlayer1")
+player_2_tag_path = NodePath("VBoxContainer/Container/VBoxContainer/HBoxContainer/LabelPlayer2")
+score_label_path = NodePath("VBoxContainer/Container/VBoxContainer/HBoxContainer/LabelScore")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Container/TabContainer/Match" index="0"]
 
@@ -250,7 +270,6 @@ size_flags_horizontal = 1
 size_flags_vertical = 1
 custom_constants/separation = 10
 alignment = 0
-script = ExtResource( 3 )
 _sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_constants" ]
 
 [node name="OptionButtonMatches" type="OptionButton" parent="Container/TabContainer/Match/VBoxContainer/HBoxContainerPlayers" index="0"]
@@ -274,10 +293,11 @@ action_mode = 0
 enabled_focus_mode = 2
 shortcut = null
 group = null
-text = "TEST"
+text = "Select a match ..."
 flat = false
+clip_text = true
 align = 0
-items = [ "TEST", null, false, -1, null ]
+items = [  ]
 selected = 0
 _sections_unfolded = [ "Anchor", "Rect" ]
 
@@ -305,7 +325,7 @@ text = "Update"
 flat = false
 align = 1
 
-[node name="GridContainer" type="GridContainer" parent="Container/TabContainer/Match/VBoxContainer" index="1"]
+[node name="Container" type="Container" parent="Container/TabContainer/Match/VBoxContainer" index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -313,16 +333,293 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 24.0
 margin_right = 484.0
-margin_bottom = 224.0
-rect_min_size = Vector2( 0, 200 )
+margin_bottom = 424.0
+rect_min_size = Vector2( 0, 400 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Container/TabContainer/Match/VBoxContainer/Container" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+margin_bottom = 40.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 1
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-columns = 4
-_sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_constants" ]
+alignment = 1
+_sections_unfolded = [ "Anchor", "Margin" ]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 487.0
+margin_bottom = 84.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 58.0
+margin_bottom = 84.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+alignment = 1
+
+[node name="ButtonP1AddPoint" type="Button" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 8.0
+margin_right = 58.0
+margin_bottom = 28.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "+"
+flat = false
+align = 1
+
+[node name="ButtonP1RemovePoint" type="Button" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 32.0
+margin_right = 58.0
+margin_bottom = 52.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "-"
+flat = false
+align = 1
+
+[node name="ButtonP1Winner" type="Button" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 56.0
+margin_right = 58.0
+margin_bottom = 76.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Winner"
+flat = false
+align = 1
+
+[node name="LabelPlayer1" type="Label" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 62.0
+margin_top = 35.0
+margin_right = 175.0
+margin_bottom = 49.0
+rect_min_size = Vector2( 113, 0 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+align = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="LabelScore" type="Label" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 179.0
+margin_right = 308.0
+margin_bottom = 84.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+custom_fonts/font = SubResource( 1 )
+text = "0-0"
+align = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "custom_fonts" ]
+
+[node name="LabelPlayer2" type="Label" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer" index="3"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 312.0
+margin_top = 35.0
+margin_right = 425.0
+margin_bottom = 49.0
+rect_min_size = Vector2( 113, 0 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+align = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer" index="4"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 429.0
+margin_right = 487.0
+margin_bottom = 84.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+alignment = 1
+
+[node name="ButtonP2AddPoint" type="Button" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer2" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 8.0
+margin_right = 58.0
+margin_bottom = 28.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "+"
+flat = false
+align = 1
+
+[node name="ButtonP2RemovePoint" type="Button" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer2" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 32.0
+margin_right = 58.0
+margin_bottom = 52.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "-"
+flat = false
+align = 1
+
+[node name="ButtonP2Winner" type="Button" parent="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer2" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 56.0
+margin_right = 58.0
+margin_bottom = 76.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Winner"
+flat = false
+align = 1
 
 [node name="Settings" type="Container" parent="Container/TabContainer" index="2"]
 
@@ -332,7 +629,7 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
-margin_top = 32.0
+margin_top = 24.0
 margin_right = -4.0
 margin_bottom = -4.0
 rect_pivot_offset = Vector2( 0, 0 )
@@ -341,6 +638,7 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
+script = ExtResource( 7 )
 _sections_unfolded = [ "Anchor", "Hint", "Margin" ]
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Container/TabContainer/Settings" index="0"]
@@ -381,7 +679,7 @@ placeholder_alpha = 0.6
 caret_blink = true
 caret_blink_speed = 0.65
 caret_position = 0
-script = ExtResource( 4 )
+script = ExtResource( 8 )
 _sections_unfolded = [ "Hint", "Placeholder" ]
 
 [node name="LineEditApiKey" type="LineEdit" parent="Container/TabContainer/Settings/VBoxContainer" index="1"]
@@ -409,7 +707,7 @@ placeholder_alpha = 0.6
 caret_blink = true
 caret_blink_speed = 0.65
 caret_position = 0
-script = ExtResource( 5 )
+script = ExtResource( 9 )
 _sections_unfolded = [ "Hint", "Placeholder" ]
 
 [node name="PopupDialog" type="PopupDialog" parent="." index="2"]
@@ -435,10 +733,12 @@ _sections_unfolded = [ "Anchor", "Popup", "Rect" ]
 
 anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 40.0
-margin_bottom = 40.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 20.0
+margin_top = 20.0
+margin_right = -20.0
+margin_bottom = -20.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = true
 mouse_filter = 0
@@ -451,15 +751,31 @@ visible_characters = -1
 percent_visible = 1.0
 meta_underlined = true
 tab_size = 4
-text = "Hello"
+text = ""
 scroll_active = true
 scroll_following = false
 selection_enabled = false
 override_selected_font_color = false
+script = ExtResource( 10 )
+_sections_unfolded = [ "Anchor", "BBCode", "Margin" ]
 
 [connection signal="button_down" from="Container/TabContainer/Participants/VBoxContainer/ButtonUpdateParticipants" to="Container/TabContainer/Participants/VBoxContainer/ButtonUpdateParticipants" method="_on_ButtonUpdateParticipants_button_down"]
 
-[connection signal="button_up" from="Container/TabContainer/Match/VBoxContainer/HBoxContainerPlayers/ButtonUpdateMatches" to="Container/TabContainer/Match/VBoxContainer/HBoxContainerPlayers" method="_on_ButtonUpdateMatches_button_up"]
+[connection signal="item_selected" from="Container/TabContainer/Match/VBoxContainer/HBoxContainerPlayers/OptionButtonMatches" to="Container/TabContainer/Match" method="_on_OptionButtonMatches_item_selected"]
+
+[connection signal="button_up" from="Container/TabContainer/Match/VBoxContainer/HBoxContainerPlayers/ButtonUpdateMatches" to="Container/TabContainer/Match" method="_on_ButtonUpdateMatches_button_up"]
+
+[connection signal="button_up" from="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer/ButtonP1AddPoint" to="Container/TabContainer/Match" method="_on_ButtonP1AddPoint_button_up"]
+
+[connection signal="button_up" from="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer/ButtonP1RemovePoint" to="Container/TabContainer/Match" method="_on_ButtonP1RemovePoint_button_up"]
+
+[connection signal="button_up" from="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer/ButtonP1Winner" to="Container/TabContainer/Match" method="_on_ButtonP1Winner_button_up"]
+
+[connection signal="button_up" from="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer2/ButtonP2AddPoint" to="Container/TabContainer/Match" method="_on_ButtonP2AddPoint_button_up"]
+
+[connection signal="button_up" from="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer2/ButtonP2RemovePoint" to="Container/TabContainer/Match" method="_on_ButtonP2RemovePoint_button_up"]
+
+[connection signal="button_up" from="Container/TabContainer/Match/VBoxContainer/Container/VBoxContainer/HBoxContainer/VBoxContainer2/ButtonP2Winner" to="Container/TabContainer/Match" method="_on_ButtonP2Winner_button_up"]
 
 [connection signal="text_entered" from="Container/TabContainer/Settings/VBoxContainer/LineEditApiKey" to="Container/TabContainer/Settings/VBoxContainer/LineEditApiKey" method="_on_LineEditApiKey_text_entered"]
 

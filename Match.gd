@@ -1,0 +1,190 @@
+extends Container
+
+onready var matches = []
+
+var selected_match setget set_match,get_match
+
+onready var matches_button = get_node("VBoxContainer/HBoxContainerPlayers/OptionButtonMatches")
+
+
+export(NodePath) var player_1_tag_path
+export(NodePath) var player_2_tag_path
+export(NodePath) var score_label_path
+
+onready var player_1_tag = get_node(player_1_tag_path)
+onready var player_2_tag = get_node(player_2_tag_path)
+onready var score_label = get_node(score_label_path)
+
+onready var scores = [0,0]
+
+#onready var p1_tag_file = File.new()#.open("p1_tag.txt", File.WRITE)
+#onready var p2_tag_file = File.new()#.open("p2_tag.txt", File.WRITE)
+
+func _ready():
+	matches_button.clear()
+	matches_button.add_item("Click \"Update\" to get matches ->")
+	player_1_tag.set_text("")
+	player_2_tag.set_text("")
+
+func got_matches(new_matches):
+	matches = new_matches
+	matches_button.clear()
+	matches_button.add_item("Select a match ...")
+	
+	for m in matches:
+#		if (m["match"]["state"] == "pending"):
+#			continue
+#		else:
+#			matches.append(m)
+		print(m["match"]["state"])
+		var p1_id = m["match"]["player1_id"]
+		var p2_id = m["match"]["player2_id"]
+			
+		var p1 = Tournament.get_participant(p1_id)
+		var p2 = Tournament.get_participant(p2_id)
+		
+		var p1tag = "???"
+		var p2tag = "???"
+		
+		if (p1 != null):
+			p1tag = p1.display_name
+		elif (p1_id != null):
+			p1tag = "p1 id: " + str(p1_id)
+		
+		if (p2 != null):
+			p2tag = p2.display_name
+		elif (p2_id != null):
+			p2tag = "p2 id: " + str(p2_id)
+		
+		var match_round = "INVALID"
+		if (m["match"]["round"] != null):
+			match_round = m["match"]["round"]
+			match_round = match_round_from_int(m["match"]["round"])
+		
+		matches_button.add_item(match_round + " " + p1tag + " vs " + p2tag)
+		if (m["match"]["state"] == "pending"):
+			matches_button.set_item_disabled(matches_button.get_item_count()-1, true)
+	pass
+	
+func match_round_from_int(match_round):
+	if (match_round > 0):
+		return "W" + String(abs(match_round))
+	else:
+		return "L" + String(abs(match_round))
+	
+
+func _on_ButtonUpdateMatches_button_up():
+	player_1_tag.set_text("")
+	player_2_tag.set_text("")
+	Tournament.http_request(self, HTTPClient.METHOD_GET, [], "/matches.json", funcref(self, "got_matches"))
+
+
+func _on_OptionButtonMatches_item_selected(ID):
+	set_match(matches[ID-1]) # + 1 for placeholder row
+	pass # replace with function body
+
+func set_match(new_match):
+	selected_match = new_match
+	
+	player_1_tag.set_text(Tournament.get_participant(selected_match["match"]["player1_id"]).display_name)
+	player_2_tag.set_text(Tournament.get_participant(selected_match["match"]["player2_id"]).display_name)
+	
+	if selected_match["match"]["scores_csv"] == "":
+		scores = [0,0]
+	else:
+		scores = selected_match["match"]["scores_csv"].split("-")
+		scores = [scores[0].to_int(), scores[1].to_int()]
+	score_label.set_text(String(scores[0]) + "-" + String(scores[1]))
+	pass
+	
+func updated_match(updated_match):
+	print("updated match")
+	var p1_tag_file = File.new()
+	var p2_tag_file = File.new()
+	var p1_score_file = File.new()
+	var p2_score_file = File.new()
+	
+	p1_tag_file.open("p1_tag.txt", File.WRITE)
+	p2_tag_file.open("p2_tag.txt", File.WRITE)
+	p1_score_file.open("p1_score.txt", File.WRITE)
+	p2_score_file.open("p2_score.txt", File.WRITE)
+		
+	p1_tag_file.store_string(player_1_tag.get_text())
+	p2_tag_file.store_string(player_2_tag.get_text())
+	p1_score_file.store_string(str(scores[0]))
+	p2_score_file.store_string(str(scores[1]))
+	
+	p1_tag_file.close()
+	p2_tag_file.close()
+	p1_score_file.close()
+	p2_score_file.close()
+	pass
+	
+func get_match():
+	return selected_match
+
+func _on_ButtonSwapLabels_button_up():
+	pass # replace with function body
+
+
+func _on_ButtonP1AddPoint_button_up():
+	scores[0] += 1
+	score_label.set_text(String(scores[0]) + "-" + String(scores[1]))
+	update_match_score()
+	pass
+
+func _on_ButtonP1RemovePoint_button_up():
+	scores[0] -= 1
+	score_label.set_text(String(scores[0]) + "-" + String(scores[1]))
+	update_match_score()
+	pass # replace with function body
+
+
+func _on_ButtonP2AddPoint_button_up():
+	scores[1] += 1
+	score_label.set_text(String(scores[0]) + "-" + String(scores[1]))
+	update_match_score()
+	pass # replace with function body
+
+
+func _on_ButtonP2RemovePoint_button_up():
+	scores[1] -= 1
+	score_label.set_text(String(scores[0]) + "-" + String(scores[1]))
+	update_match_score()
+	pass # replace with function body
+
+func update_match_score():
+	if selected_match == null:
+		return
+	var path = "/matches/" + String(selected_match["match"]["id"]) + ".json"
+	#var body = '{"match":{"scores_csv":"' + score_label.get_text() + '"}}'
+	var body = {
+		"match": {
+			"scores_csv":score_label.get_text()
+		}
+	}
+	Tournament.http_request(self, HTTPClient.METHOD_PUT, ["Content-Type: application/json"], path, funcref(self, "updated_match"), var2str(body))
+	pass
+	
+func update_match_winner(winner_id):
+	if selected_match == null:
+		return
+	var path = "/matches/" + String(selected_match["match"]["id"]) + ".json"
+	var body = {
+		"match": {
+			"scores_csv":score_label.get_text(),
+			"winner_id": str(winner_id)
+		}
+	}
+	Tournament.http_request(self, HTTPClient.METHOD_PUT, ["Content-Type: application/json"], path, funcref(self, "updated_match"), var2str(body))
+
+func _on_ButtonP1Winner_button_up():
+	update_match_winner(selected_match["match"]["player1_id"])
+	pass # replace with function body
+	
+
+func _on_ButtonP2Winner_button_up():
+	update_match_winner(selected_match["match"]["player2_id"])
+	pass # replace with function body
+
+
