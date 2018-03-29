@@ -4,12 +4,18 @@ extends Container
 # var a = 2
 # var b = "textvar"
 
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
-	pass
+export(NodePath) var tournament_name_line_edit_path
+export(NodePath) var api_key_line_edit_path
 
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
+onready var tournament_name_line_edit= get_node(tournament_name_line_edit_path)
+onready var api_key_line_edit = get_node(api_key_line_edit_path)
+
+func _ready():
+	tournament_name_line_edit.set_text(Tournament.get_tournament_name())
+	api_key_line_edit.set_text(Tournament.get_api_key())
+
+func _on_LineEditTournamentName_text_entered(new_text):
+	Tournament.GET_tournament()
+
+func _on_LineEditApiKey_text_entered(new_text):
+	Tournament.GET_tournament()

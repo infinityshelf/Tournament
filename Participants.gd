@@ -1,24 +1,45 @@
 extends Container
 
-# class member variables go here, for example:
-# var a = 2
-# var b = "textvar"
+export(NodePath) var participants_item_list_path
+onready var participants_item_list = get_node(participants_item_list_path)
 
-export(NodePath) var match_container_path
-onready var match_container = get_node(match_container_path)
+export(NodePath) var enter_participant_dialog_path
+onready var enter_participant_dialog = get_node(enter_participant_dialog_path)
+
+export(NodePath) var enter_participant_line_edit_path
+onready var enter_participant_line_edit = get_node(enter_participant_line_edit_path)
+
+var selected_participant
 
 func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
-	Tournament.http_request(self, HTTPClient.METHOD_GET, [],"/participants.json", funcref(self, "_got_participants"))
+	Tournament.connect("participants_updated", self,"_got_participants")
 	pass
 
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
+
+func _got_participants():
+	participants_item_list.clear()
+	for p in Tournament.get_participants():
+		var participant = p["participant"]
+		participants_item_list.add_item(participant["name"])
+
+func _on_ButtonAdd_button_up():
+	enter_participant_dialog.popup_centered_minsize(Vector2(200,46))
 
 
-func _got_participants(participants_json):
-	get_node("VBoxContainer/ItemList").add_participants(load("res://Participant.gd").parse_from_json_response(participants_json))
-	#Tournament.http_request(self, HTTPClient.METHOD_GET, [], "/matches.json", funcref(match_container, "got_matches"))
+func _on_ButtonRemove_button_up():
+	if selected_participant == null:
+		get_node("VBoxContainer/ButtonRemove").set_enabled(false)
+	else:
+		Tournament.DELETE_participant(selected_participant["participant"]["id"])
+
+
+func _on_ItemList_item_selected(index):
+	selected_participant = Tournament.get_participants()[index]
+
+func _on_ButtonUpdateParticipants_button_up():
+	Tournament.GET_participants()
+
+func _on_LineEditAddParticipant_text_entered(new_text):
+	enter_participant_dialog.hide()
+	Tournament.POST_participant(var2str({"participant":{"name":new_text}}))
+	enter_participant_line_edit.clear()

@@ -1,6 +1,6 @@
 extends Container
 
-onready var matches = []
+#onready var matches = []
 
 var selected_match setget set_match,get_match
 
@@ -25,18 +25,14 @@ func _ready():
 	matches_button.add_item("Click \"Update\" to get matches ->")
 	player_1_tag.set_text("")
 	player_2_tag.set_text("")
+	Tournament.connect("matches_updated", self, "_got_matches")
 
-func got_matches(new_matches):
-	matches = new_matches
+func _got_matches():
+
 	matches_button.clear()
 	matches_button.add_item("Select a match ...")
 	
-	for m in matches:
-#		if (m["match"]["state"] == "pending"):
-#			continue
-#		else:
-#			matches.append(m)
-		print(m["match"]["state"])
+	for m in Tournament.get_matches():
 		var p1_id = m["match"]["player1_id"]
 		var p2_id = m["match"]["player2_id"]
 			
@@ -76,11 +72,12 @@ func match_round_from_int(match_round):
 func _on_ButtonUpdateMatches_button_up():
 	player_1_tag.set_text("")
 	player_2_tag.set_text("")
-	Tournament.http_request(self, HTTPClient.METHOD_GET, [], "/matches.json", funcref(self, "got_matches"))
+	#Tournament.http_request(self, HTTPClient.METHOD_GET, [], "/matches.json", funcref(self, "got_matches"))
+	Tournament.GET_matches()
 
 
 func _on_OptionButtonMatches_item_selected(ID):
-	set_match(matches[ID-1]) # + 1 for placeholder row
+	set_match(Tournament.get_matches()[ID-1]) # + 1 for placeholder row
 	pass # replace with function body
 
 func set_match(new_match):
@@ -95,9 +92,10 @@ func set_match(new_match):
 		scores = selected_match["match"]["scores_csv"].split("-")
 		scores = [scores[0].to_int(), scores[1].to_int()]
 	score_label.set_text(String(scores[0]) + "-" + String(scores[1]))
+	updated_match()
 	pass
 	
-func updated_match(updated_match):
+func updated_match():
 	print("updated match")
 	var p1_tag_file = File.new()
 	var p2_tag_file = File.new()
@@ -156,27 +154,23 @@ func _on_ButtonP2RemovePoint_button_up():
 func update_match_score():
 	if selected_match == null:
 		return
-	var path = "/matches/" + String(selected_match["match"]["id"]) + ".json"
-	#var body = '{"match":{"scores_csv":"' + score_label.get_text() + '"}}'
 	var body = {
 		"match": {
 			"scores_csv":score_label.get_text()
 		}
 	}
-	Tournament.http_request(self, HTTPClient.METHOD_PUT, ["Content-Type: application/json"], path, funcref(self, "updated_match"), var2str(body))
-	pass
+	Tournament.PUT_match(selected_match["match"]["id"], var2str(body))
 	
 func update_match_winner(winner_id):
 	if selected_match == null:
 		return
-	var path = "/matches/" + String(selected_match["match"]["id"]) + ".json"
 	var body = {
 		"match": {
 			"scores_csv":score_label.get_text(),
 			"winner_id": str(winner_id)
 		}
 	}
-	Tournament.http_request(self, HTTPClient.METHOD_PUT, ["Content-Type: application/json"], path, funcref(self, "updated_match"), var2str(body))
+	Tournament.PUT_match(selected_match["match"]["id"], var2str(body))
 
 func _on_ButtonP1Winner_button_up():
 	update_match_winner(selected_match["match"]["player1_id"])
