@@ -18,7 +18,10 @@ func _ready():
 
 func _got_participants():
 	participants_item_list.clear()
-	for p in Tournament.get_participants():
+	var participants = Tournament.get_participants()
+	if participants.size() == 0:
+		return
+	for p in participants:
 		var participant = p["participant"]
 		participants_item_list.add_item(participant["name"])
 

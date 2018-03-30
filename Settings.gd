@@ -15,7 +15,7 @@ func _ready():
 	api_key_line_edit.set_text(Tournament.get_api_key())
 
 func _on_LineEditTournamentName_text_entered(new_text):
-	Tournament.GET_tournament()
+	Tournament.GET_tournament(1,1)
 
 func _on_LineEditApiKey_text_entered(new_text):
-	Tournament.GET_tournament()
+	Tournament.GET_tournament(1,1)

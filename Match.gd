@@ -4,9 +4,7 @@ extends Container
 
 var selected_match setget set_match,get_match
 
-onready var matches_button = get_node("VBoxContainer/HBoxContainerPlayers/OptionButtonMatches")
-
-
+export(NodePath) var matches_button_path
 export(NodePath) var player_1_tag_path
 export(NodePath) var player_2_tag_path
 export(NodePath) var score_label_path
@@ -14,6 +12,7 @@ export(NodePath) var score_label_path
 onready var player_1_tag = get_node(player_1_tag_path)
 onready var player_2_tag = get_node(player_2_tag_path)
 onready var score_label = get_node(score_label_path)
+onready var matches_button = get_node(matches_button_path)
 
 onready var scores = [0,0]
 
@@ -25,9 +24,11 @@ func _ready():
 	matches_button.add_item("Click \"Update\" to get matches ->")
 	player_1_tag.set_text("")
 	player_2_tag.set_text("")
-	Tournament.connect("matches_updated", self, "_got_matches")
+	Tournament.connect("matches_updated", self, "_on_matches_updated")
+	Tournament.connect("match_score_updated", self, "_on_match_score_updated")
+	Tournament.connect("match_winner_updated", self, "_on_match_winner_updated")
 
-func _got_matches():
+func _on_matches_updated():
 
 	matches_button.clear()
 	matches_button.add_item("Select a match ...")
@@ -36,8 +37,8 @@ func _got_matches():
 		var p1_id = m["match"]["player1_id"]
 		var p2_id = m["match"]["player2_id"]
 			
-		var p1 = Tournament.get_participant(p1_id)
-		var p2 = Tournament.get_participant(p2_id)
+		var p1 = Tournament.get_participant_from_id(p1_id)
+		var p2 = Tournament.get_participant_from_id(p2_id)
 		
 		var p1tag = "???"
 		var p2tag = "???"
@@ -70,11 +71,16 @@ func match_round_from_int(match_round):
 	
 
 func _on_ButtonUpdateMatches_button_up():
-	player_1_tag.set_text("")
-	player_2_tag.set_text("")
-	#Tournament.http_request(self, HTTPClient.METHOD_GET, [], "/matches.json", funcref(self, "got_matches"))
+	_clear_tags()
 	Tournament.GET_matches()
 
+func _clear_tags():
+	player_1_tag.set_text("")
+	player_2_tag.set_text("")
+	score_label.set_text("---")
+	selected_match = null
+	matches_button.select(0)
+	
 
 func _on_OptionButtonMatches_item_selected(ID):
 	set_match(Tournament.get_matches()[ID-1]) # + 1 for placeholder row
@@ -83,8 +89,8 @@ func _on_OptionButtonMatches_item_selected(ID):
 func set_match(new_match):
 	selected_match = new_match
 	
-	player_1_tag.set_text(Tournament.get_participant(selected_match["match"]["player1_id"]).display_name)
-	player_2_tag.set_text(Tournament.get_participant(selected_match["match"]["player2_id"]).display_name)
+	player_1_tag.set_text(Tournament.get_participant_from_id(selected_match["match"]["player1_id"]).display_name)
+	player_2_tag.set_text(Tournament.get_participant_from_id(selected_match["match"]["player2_id"]).display_name)
 	
 	if selected_match["match"]["scores_csv"] == "":
 		scores = [0,0]
@@ -152,6 +158,7 @@ func _on_ButtonP2RemovePoint_button_up():
 	pass # replace with function body
 
 func update_match_score():
+	updated_match()
 	if selected_match == null:
 		return
 	var body = {
@@ -162,6 +169,7 @@ func update_match_score():
 	Tournament.PUT_match(selected_match["match"]["id"], var2str(body))
 	
 func update_match_winner(winner_id):
+	updated_match()
 	if selected_match == null:
 		return
 	var body = {
@@ -181,4 +189,12 @@ func _on_ButtonP2Winner_button_up():
 	update_match_winner(selected_match["match"]["player2_id"])
 	pass # replace with function body
 
-
+func _on_match_winner_updated():
+	_clear_tags()
+	#selected_match = null
+	#matches_button.select(0)
+	Tournament.GET_matches()
+	pass
+	
+func _on_match_score_updated():
+	pass

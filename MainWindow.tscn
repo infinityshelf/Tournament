@@ -1,17 +1,18 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://MainWindow.gd" type="Script" id=1]
-[ext_resource path="res://Participants.gd" type="Script" id=2]
-[ext_resource path="res://Match.gd" type="Script" id=3]
-[ext_resource path="res://DroidSansMono.ttf" type="DynamicFontData" id=4]
-[ext_resource path="res://Settings.gd" type="Script" id=5]
+[ext_resource path="res://TournamentContainer.gd" type="Script" id=2]
+[ext_resource path="res://Participants.gd" type="Script" id=3]
+[ext_resource path="res://Match.gd" type="Script" id=4]
+[ext_resource path="res://DroidSansMono.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://Settings.gd" type="Script" id=6]
 
 [sub_resource type="DynamicFont" id=1]
 
 size = 72
 use_mipmaps = false
 use_filter = true
-font_data = ExtResource( 4 )
+font_data = ExtResource( 5 )
 _sections_unfolded = [ "Extra Spacing", "Font", "Settings" ]
 
 [node name="ContainerMain" type="Container" index="0"]
@@ -80,9 +81,8 @@ tab_align = 1
 tabs_visible = true
 _sections_unfolded = [ "Anchor", "Margin" ]
 
-[node name="Participants" type="Container" parent="Container/TabContainer" index="0"]
+[node name="Tournament" type="Container" parent="Container/TabContainer" index="0"]
 
-editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -98,6 +98,49 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 script = ExtResource( 2 )
+
+[node name="Button" type="Button" parent="Container/TabContainer/Tournament" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 12.0
+margin_bottom = 20.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Start"
+flat = false
+align = 1
+
+[node name="Participants" type="Container" parent="Container/TabContainer" index="1"]
+
+editor/display_folded = true
+visible = false
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+script = ExtResource( 3 )
 _sections_unfolded = [ "Anchor", "Margin" ]
 participants_item_list_path = NodePath("VBoxContainer/ItemList")
 enter_participant_dialog_path = NodePath("WindowDialogAddParticipant")
@@ -260,7 +303,7 @@ caret_blink_speed = 0.65
 caret_position = 0
 _sections_unfolded = [ "Anchor", "Hint", "Margin", "Placeholder", "Rect" ]
 
-[node name="Matches" type="Container" parent="Container/TabContainer" index="1"]
+[node name="Matches" type="Container" parent="Container/TabContainer" index="2"]
 
 editor/display_folded = true
 visible = false
@@ -278,8 +321,9 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-script = ExtResource( 3 )
+script = ExtResource( 4 )
 _sections_unfolded = [ "Anchor", "Margin" ]
+matches_button_path = NodePath("VBoxContainer/HBoxContainerPlayers/OptionButtonMatches")
 player_1_tag_path = NodePath("VBoxContainer/Container/VBoxContainer/HBoxContainer/LabelPlayer1")
 player_2_tag_path = NodePath("VBoxContainer/Container/VBoxContainer/HBoxContainer/LabelPlayer2")
 score_label_path = NodePath("VBoxContainer/Container/VBoxContainer/HBoxContainer/LabelScore")
@@ -371,7 +415,6 @@ align = 1
 
 [node name="Container" type="Container" parent="Container/TabContainer/Matches/VBoxContainer" index="1"]
 
-editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -547,7 +590,7 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
 custom_fonts/font = SubResource( 1 )
-text = "0-0"
+text = "---"
 align = 1
 percent_visible = 1.0
 lines_skipped = 0
@@ -666,7 +709,7 @@ text = "Winner"
 flat = false
 align = 1
 
-[node name="Settings" type="Container" parent="Container/TabContainer" index="2"]
+[node name="Settings" type="Container" parent="Container/TabContainer" index="3"]
 
 editor/display_folded = true
 visible = false
@@ -684,7 +727,7 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-script = ExtResource( 5 )
+script = ExtResource( 6 )
 _sections_unfolded = [ "Anchor", "Hint", "Margin" ]
 tournament_name_line_edit_path = NodePath("VBoxContainer/LineEditTournamentName")
 api_key_line_edit_path = NodePath("VBoxContainer/LineEditApiKey")
@@ -858,6 +901,8 @@ scroll_following = false
 selection_enabled = false
 override_selected_font_color = false
 _sections_unfolded = [ "Anchor", "Margin" ]
+
+[connection signal="button_up" from="Container/TabContainer/Tournament/Button" to="Container/TabContainer/Tournament" method="_on_Button_button_up"]
 
 [connection signal="item_selected" from="Container/TabContainer/Participants/VBoxContainer/ItemList" to="Container/TabContainer/Participants" method="_on_ItemList_item_selected"]
 
