@@ -1,18 +1,19 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://MainWindow.gd" type="Script" id=1]
 [ext_resource path="res://TournamentContainer.gd" type="Script" id=2]
-[ext_resource path="res://Participants.gd" type="Script" id=3]
-[ext_resource path="res://Match.gd" type="Script" id=4]
-[ext_resource path="res://DroidSansMono.ttf" type="DynamicFontData" id=5]
-[ext_resource path="res://Settings.gd" type="Script" id=6]
+[ext_resource path="res://challonge_fireball_orange.svg" type="Texture" id=3]
+[ext_resource path="res://Participants.gd" type="Script" id=4]
+[ext_resource path="res://Match.gd" type="Script" id=5]
+[ext_resource path="res://DroidSansMono.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://Settings.gd" type="Script" id=7]
 
 [sub_resource type="DynamicFont" id=1]
 
 size = 72
 use_mipmaps = false
 use_filter = true
-font_data = ExtResource( 5 )
+font_data = ExtResource( 6 )
 _sections_unfolded = [ "Extra Spacing", "Font", "Settings" ]
 
 [node name="ContainerMain" type="Container" index="0"]
@@ -99,14 +100,72 @@ size_flags_horizontal = 1
 size_flags_vertical = 1
 script = ExtResource( 2 )
 
-[node name="Button" type="Button" parent="Container/TabContainer/Tournament" index="0"]
+[node name="TextureRect" type="TextureRect" parent="Container/TabContainer/Tournament" index="0"]
+
+self_modulate = Color( 1, 1, 1, 0.0627451 )
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 3 )
+stretch_mode = 6
+_sections_unfolded = [ "Anchor", "Margin", "Visibility" ]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Container/TabContainer/Tournament/TextureRect" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+alignment = 1
+_sections_unfolded = [ "Anchor", "Margin", "Visibility" ]
+
+[node name="LineEditTournamentName" type="LineEdit" parent="Container/TabContainer/Tournament/TextureRect/VBoxContainer" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_right = 12.0
-margin_bottom = 20.0
+margin_top = 180.0
+margin_right = 484.0
+margin_bottom = 204.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 1
+size_flags_horizontal = 1
+size_flags_vertical = 1
+focus_mode = 2
+context_menu_enabled = true
+placeholder_text = "Rename Tournament"
+placeholder_alpha = 0.6
+caret_blink = false
+caret_blink_speed = 0.65
+caret_position = 0
+_sections_unfolded = [ "Placeholder" ]
+
+[node name="ButtonStartTournament" type="Button" parent="Container/TabContainer/Tournament/TextureRect/VBoxContainer" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 208.0
+margin_right = 484.0
+margin_bottom = 228.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 focus_mode = 2
@@ -118,9 +177,86 @@ toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
 group = null
-text = "Start"
+text = "Start Tournament"
 flat = false
 align = 1
+_sections_unfolded = [ "Rect" ]
+
+[node name="ButtonFinalizeTournament" type="Button" parent="Container/TabContainer/Tournament/TextureRect/VBoxContainer" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 232.0
+margin_right = 484.0
+margin_bottom = 252.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Finalize Tournament"
+flat = false
+align = 1
+_sections_unfolded = [ "Rect" ]
+
+[node name="ButtonResetTournament" type="Button" parent="Container/TabContainer/Tournament/TextureRect/VBoxContainer" index="3"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 256.0
+margin_right = 484.0
+margin_bottom = 276.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Reset Tournament"
+flat = false
+align = 1
+_sections_unfolded = [ "Material", "Rect", "Visibility" ]
+
+[node name="LineEditChangeURL" type="LineEdit" parent="Container/TabContainer/Tournament/TextureRect/VBoxContainer" index="4"]
+
+visible = false
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 274.0
+margin_right = 484.0
+margin_bottom = 298.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 1
+size_flags_horizontal = 1
+size_flags_vertical = 1
+focus_mode = 2
+context_menu_enabled = true
+placeholder_text = "Change URL"
+placeholder_alpha = 0.6
+caret_blink = false
+caret_blink_speed = 0.65
+caret_position = 0
+_sections_unfolded = [ "Placeholder" ]
 
 [node name="Participants" type="Container" parent="Container/TabContainer" index="1"]
 
@@ -140,7 +276,7 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-script = ExtResource( 3 )
+script = ExtResource( 4 )
 _sections_unfolded = [ "Anchor", "Margin" ]
 participants_item_list_path = NodePath("VBoxContainer/ItemList")
 enter_participant_dialog_path = NodePath("WindowDialogAddParticipant")
@@ -321,7 +457,7 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-script = ExtResource( 4 )
+script = ExtResource( 5 )
 _sections_unfolded = [ "Anchor", "Margin" ]
 matches_button_path = NodePath("VBoxContainer/HBoxContainerPlayers/OptionButtonMatches")
 player_1_tag_path = NodePath("VBoxContainer/Container/VBoxContainer/HBoxContainer/LabelPlayer1")
@@ -727,7 +863,7 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-script = ExtResource( 6 )
+script = ExtResource( 7 )
 _sections_unfolded = [ "Anchor", "Hint", "Margin" ]
 tournament_name_line_edit_path = NodePath("VBoxContainer/LineEditTournamentName")
 api_key_line_edit_path = NodePath("VBoxContainer/LineEditApiKey")
@@ -902,7 +1038,15 @@ selection_enabled = false
 override_selected_font_color = false
 _sections_unfolded = [ "Anchor", "Margin" ]
 
-[connection signal="button_up" from="Container/TabContainer/Tournament/Button" to="Container/TabContainer/Tournament" method="_on_Button_button_up"]
+[connection signal="text_entered" from="Container/TabContainer/Tournament/TextureRect/VBoxContainer/LineEditTournamentName" to="Container/TabContainer/Tournament" method="_on_LineEdit_text_entered"]
+
+[connection signal="button_up" from="Container/TabContainer/Tournament/TextureRect/VBoxContainer/ButtonStartTournament" to="Container/TabContainer/Tournament" method="_on_Button_button_up"]
+
+[connection signal="button_up" from="Container/TabContainer/Tournament/TextureRect/VBoxContainer/ButtonFinalizeTournament" to="Container/TabContainer/Tournament" method="_on_ButtonFinalizeTournament_button_up"]
+
+[connection signal="button_up" from="Container/TabContainer/Tournament/TextureRect/VBoxContainer/ButtonResetTournament" to="Container/TabContainer/Tournament" method="_on_ButtonResetTournament_button_up"]
+
+[connection signal="text_entered" from="Container/TabContainer/Tournament/TextureRect/VBoxContainer/LineEditChangeURL" to="Container/TabContainer/Tournament" method="_on_LineEdit_text_entered"]
 
 [connection signal="item_selected" from="Container/TabContainer/Participants/VBoxContainer/ItemList" to="Container/TabContainer/Participants" method="_on_ItemList_item_selected"]
 

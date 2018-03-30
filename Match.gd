@@ -102,7 +102,6 @@ func set_match(new_match):
 	pass
 	
 func updated_match():
-	print("updated match")
 	var p1_tag_file = File.new()
 	var p2_tag_file = File.new()
 	var p1_score_file = File.new()
@@ -191,8 +190,6 @@ func _on_ButtonP2Winner_button_up():
 
 func _on_match_winner_updated():
 	_clear_tags()
-	#selected_match = null
-	#matches_button.select(0)
 	Tournament.GET_matches()
 	pass
 	

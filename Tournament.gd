@@ -1,11 +1,5 @@
 extends Node
 
-#signal got_participants_json
-#signal got_new_participant_json
-#signal destroyed_participant_json
-#signal got_matches_json
-#signal got_tournament_json
-#signal got_updated_match_json
 signal got_error_json
 signal participants_updated
 signal matches_updated
@@ -13,17 +7,9 @@ signal tournament_updated
 signal match_score_updated
 signal match_winner_updated
 
-# class member variables go here, for example:
-# var a = 2
-# var b = "textvar"
-
-#onready var http = get_node("ParticipantsHTTPRequest")
-#var http = HTTPRequest.new()
-
 var env = {}
 var api_key = "" setget set_api_key, get_api_key
-#var participants = [] setget set_participants,get_participants
-#var matches = [] setget set_matches, get_matches
+
 var tournament = {} setget set_tournament, get_tournament
 var tournament_name = "" setget set_tournament_name, get_tournament_name
 
@@ -73,7 +59,10 @@ func get_tournament():
 # PARTICIPANTS #
 
 func set_participants(new_participants):
-	tournament["participants"] = new_participants
+	if (new_participants.has("participants")):
+		tournament["participants"] = new_participants["participants"]
+	else:
+		tournament["participants"] = new_participants
 	emit_signal("participants_updated")
 
 func get_participants():
@@ -128,6 +117,17 @@ func GET_tournament(include_participants=0, include_matches=0):
 
 func POST_start_tournament(include_participants=0, include_matches=0):
 	_http_request(self, HTTPClient.METHOD_POST, ["Content-Type: application/json"], "/start.json", funcref(self, "set_tournament"), "{}", "&include_participants=" + str(include_participants) + "&include_matches=" + str(include_matches))
+	
+func POST_finalize_tournament(include_participants=0, include_matches=0):
+	_http_request(self,HTTPClient.METHOD_POST, ["Content-Type: application/json"], "/finalize.json", funcref(self, "set_tournament"), "{}", "&include_participants=" + str(include_participants) + "&include_matches=" + str(include_matches))
+	pass
+	
+func POST_reset_tournament(include_participants=0, include_matches=0):
+	_http_request(self, HTTPClient.METHOD_POST, ["Content-Type: application/json"], "/reset.json", funcref(self, "set_tournament"), "{}", "&include_participants=" + str(include_participants) + "&include_matches=" + str(include_matches))
+	pass
+	
+func PUT_rename_tournament(body):
+	_http_request(self, HTTPClient.METHOD_PUT, ["Content-Type: application/json"], ".json", null, body)
 	
 func GET_participants():
 	_http_request(self, HTTPClient.METHOD_GET, [],"/participants.json", funcref(self, "set_participants"))
